@@ -11,21 +11,22 @@ class HistoryController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the request
-        $validated = $request->validate([
-            // 'user_id' => 'required|exists:users,id',
-            'prompt' => 'required|string',
-        ]);
 
-        // Create the history
+        // $validated = $request->validate([
+        //     'prompt' => 'required|string',
+        // ]);
+
+        // dd($request->input('prompt'));
+
         $history = History::create([
             'user_id' => Auth::user()->id,
-            'prompt' => $validated['prompt'],
+            'prompt' => $request->input('prompt'),
         ]);
 
         return response()->json([
             'message' => 'History created successfully',
             'history' => $history,
+
         ], 201);
     }
 
@@ -34,7 +35,7 @@ class HistoryController extends Controller
      */
     public function index()
     {
-        $histories = History::where('user_id',Auth::user()->id)->get();
+        $histories = History::where('user_id', Auth::user()->id)->get();
         return response()->json([
             'histories' => $histories,
         ]);

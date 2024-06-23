@@ -13,13 +13,14 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" x-data="formValidation()" @submit.prevent="validateForm">
         @csrf
         @method('patch')
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
+            <p x-show="nameError" class="mt-2 text-red-600">{{ __('Name must contain only alphabets and spaces, and be at least three words.') }}</p>
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
@@ -62,3 +63,24 @@
         </div>
     </form>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+    function formValidation() {
+        return {
+            name: '',
+            nameError: false,
+            validateForm() {
+                this.nameError = false;
+                const nameRegex = /^[A-Za-z\s]+$/;
+                const nameWords = this.name.trim().split(/\s+/);
+
+                if (!nameRegex.test(this.name) || nameWords.length < 1) {
+                    this.nameError = true;
+                } else {
+                    this.$el.submit();
+                }
+            }
+        }
+    }
+</script>
